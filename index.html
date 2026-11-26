@@ -74,10 +74,43 @@
     .info-box {
       background: #e6f4ea;
       border-left: 5px solid #00875A;
-      padding: 12px;
+      padding: 12px 14px;
       border-radius: 6px;
       margin: 16px 0;
       display: none;
+      line-height: 1.5;
+    }
+    .transfer-badge {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 6px 10px;
+      background: #fff7ed;
+      border: 1px solid #fdba74;
+      color: #9a3412;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .legend-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      font-size: 13px;
+      color: #495057;
+      margin-top: 8px;
+    }
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      display: inline-block;
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 1px #adb5bd;
     }
     .map-block {
       margin-top: 14px;
@@ -166,62 +199,54 @@
       2: {
         name: "2-րդ հարկ",
         src: "second_floor_clipart_pages-to-jpg-0001.jpg",
-        entry: { x: 57.5, y: 92.5 },
-        hub: { x: 54.0, y: 87.5 }
+        verticalAccess: { x: 54.0, y: 87.5 }
       },
       3: {
         name: "3-րդ հարկ",
         src: "third_floor_clipart_page-0001.jpg",
-        entry: { x: 55.0, y: 90.0 },
-        hub: { x: 55.0, y: 82.0 }
+        verticalAccess: { x: 55.0, y: 82.0 }
       },
       4: {
         name: "4-րդ հարկ",
         src: "fourth_floor_guide_pages-to-jpg-0001.jpg",
-        entry: { x: 55.0, y: 90.0 },
-        hub: { x: 55.0, y: 82.0 }
+        verticalAccess: { x: 55.0, y: 82.0 }
       },
       5: {
         name: "5-րդ հարկ",
         src: "fifth_floor_guide_pages-to-jpg-0001.jpg",
-        entry: { x: 55.0, y: 90.0 },
-        hub: { x: 55.0, y: 82.0 }
+        verticalAccess: { x: 55.0, y: 82.0 }
       },
       6: {
         name: "6-րդ հարկ",
         src: "sixth_floor_guide_page-0001.jpg",
-        entry: { x: 55.0, y: 90.0 },
-        hub: { x: 55.0, y: 82.0 }
+        verticalAccess: { x: 55.0, y: 82.0 }
       }
     };
 
-    // Միջանցքային հանգույցների ցանց (2-րդ հարկ՝ ներքևի, ձախ, վերևի և աջ միջանցքներ)
     const FLOOR2_CORRIDOR = {
       nodes: {
-        entry:    { x: 57.5, y: 92.5 },
-        bot_mid:  { x: 54.0, y: 87.5 },
-        bot_left: { x: 29.5, y: 87.5 },
-        bot_right:{ x: 70.5, y: 87.5 },
-        mid_left: { x: 29.5, y: 74.0 },
-        mid_203:  { x: 49.5, y: 74.0 },
-        mid_237:  { x: 55.5, y: 74.0 },
-        mid_right:{ x: 70.5, y: 74.0 },
-        top_left: { x: 29.5, y: 22.0 },
-        top_mid:  { x: 50.0, y: 22.0 },
-        top_right:{ x: 70.5, y: 22.0 }
+        lift_stairs: { x: 54.0, y: 87.5 },
+        bot_left:    { x: 29.5, y: 87.5 },
+        bot_right:   { x: 70.5, y: 87.5 },
+        mid_left:    { x: 29.5, y: 74.0 },
+        mid_203:     { x: 49.5, y: 74.0 },
+        mid_237:     { x: 55.5, y: 74.0 },
+        mid_right:   { x: 70.5, y: 74.0 },
+        top_left:    { x: 29.5, y: 22.0 },
+        top_mid:     { x: 50.0, y: 22.0 },
+        top_right:   { x: 70.5, y: 22.0 }
       },
       edges: {
-        entry:     ["bot_mid"],
-        bot_mid:   ["entry", "bot_left", "bot_right", "mid_237"],
-        bot_left:  ["bot_mid", "mid_left"],
-        bot_right: ["bot_mid", "mid_right"],
-        mid_left:  ["bot_left", "mid_203", "top_left"],
-        mid_203:   ["mid_left", "mid_237"],
-        mid_237:   ["bot_mid", "mid_203", "mid_right"],
-        mid_right: ["bot_right", "mid_237", "top_right"],
-        top_left:  ["mid_left", "top_mid"],
-        top_mid:   ["top_left", "top_right"],
-        top_right: ["mid_right", "top_mid"]
+        lift_stairs: ["bot_left", "bot_right", "mid_237"],
+        bot_left:    ["lift_stairs", "mid_left"],
+        bot_right:   ["lift_stairs", "mid_right"],
+        mid_left:    ["bot_left", "mid_203", "top_left"],
+        mid_203:     ["mid_left", "mid_237"],
+        mid_237:     ["lift_stairs", "mid_203", "mid_right"],
+        mid_right:   ["bot_right", "mid_237", "top_right"],
+        top_left:    ["mid_left", "top_mid"],
+        top_mid:     ["top_left", "top_right"],
+        top_right:   ["mid_right", "top_mid"]
       }
     };
 
@@ -235,7 +260,7 @@
         { id: "6", label: "6-րդ հարկ", floor: 6 }
       ],
       destinations: [
-        // 2-րդ հարկ — ներքևի գոտի (միջանցքային մոտեցմամբ)
+        // 2-րդ հարկ — ներքևի գոտի
         { id: "201", label: "2-րդ հարկ — Սենյակ 201", floor: 2, via: "mid_203", end: { x: 46.5, y: 74.0 } },
         { id: "202", label: "2-րդ հարկ — Սենյակ 202", floor: 2, via: "bot_left", end: { x: 41.5, y: 87.5 } },
         { id: "203", label: "2-րդ հարկ — Սենյակ 203 (Անոթային)", floor: 2, via: "mid_203", end: { x: 49.5, y: 74.0 } },
@@ -279,7 +304,7 @@
         { id: "235", label: "2-րդ հարկ — Սենյակ 235", floor: 2, via: "mid_right",end: { x: 65.0, y: 74.0 } },
         { id: "236", label: "2-րդ հարկ — Սենյակ 236", floor: 2, via: "mid_237",  end: { x: 59.0, y: 74.0 } },
         { id: "237", label: "2-րդ հարկ — Սենյակ 237", floor: 2, via: "mid_237",  end: { x: 55.5, y: 74.0 } },
-        { id: "238", label: "2-րդ հարկ — Սենյակ 238", floor: 2, via: "bot_mid",  end: { x: 52.0, y: 87.5 } },
+        { id: "238", label: "2-րդ հարկ — Սենյակ 238", floor: 2, via: "lift_stairs",end: { x: 52.0, y: 87.5 } },
         { id: "239", label: "2-րդ հարկ — Սենյակ 239", floor: 2, via: "bot_right",end: { x: 61.5, y: 87.5 } },
 
         // Մյուս հարկերի նախնական սենյակներ
@@ -311,13 +336,12 @@
       return [{ ...nodes[startNodeKey] }, { ...nodes[goalNodeKey] }];
     }
 
-    function buildCorridorRoute(fromFloorId, toPt) {
+    function buildCorridorRoute(toPt) {
       const floorObj = FLOORS[toPt.floor];
       if (!floorObj) return [];
 
       if (toPt.floor === 2 && toPt.via && toPt.end) {
-        const startKey = Number(fromFloorId) === 2 ? "bot_mid" : "entry";
-        const pts = findCorridorPath(startKey, toPt.via);
+        const pts = findCorridorPath("lift_stairs", toPt.via);
         const last = pts[pts.length - 1];
         if (!last || last.x !== toPt.end.x || last.y !== toPt.end.y) {
           pts.push({ ...toPt.end });
@@ -325,13 +349,11 @@
         return pts;
       }
 
-      const start = floorObj.entry || { x: 55.0, y: 90.0 };
-      const hub = floorObj.hub || { x: 55.0, y: 80.0 };
+      const start = floorObj.verticalAccess || { x: 55.0, y: 82.0 };
       const end = toPt.end || { x: 50.0, y: 50.0 };
       return [
         { ...start },
-        { ...hub },
-        { x: hub.x, y: end.y },
+        { x: start.x, y: end.y },
         { ...end }
       ];
     }
@@ -456,15 +478,17 @@
         const startPt = pts[0];
         const endPt = pts[pts.length - 1];
 
+        // Հարկափոխության / մուտքի կետ (վերելակ / աստիճանավանդակ՝ դեղին-նարնջագույն)
         const startCircle = document.createElementNS(svgNS, "circle");
         startCircle.setAttribute("cx", startPt.x * 10);
         startCircle.setAttribute("cy", startPt.y * 10);
-        startCircle.setAttribute("r", "12");
-        startCircle.setAttribute("fill", "#0284c7");
+        startCircle.setAttribute("r", "13");
+        startCircle.setAttribute("fill", "#f59e0b");
         startCircle.setAttribute("stroke", "#ffffff");
         startCircle.setAttribute("stroke-width", "4");
         svg.appendChild(startCircle);
 
+        // Նպատակակետի կանաչ շրջան
         const endCircle = document.createElementNS(svgNS, "circle");
         endCircle.setAttribute("cx", endPt.x * 10);
         endCircle.setAttribute("cy", endPt.y * 10);
@@ -491,11 +515,23 @@
       if (!fromFloorObj || !toPt) return;
 
       const targetFloor = FLOORS[toPt.floor];
+      const fromNum = Number(fromFloorId);
+      const toNum = Number(toPt.floor);
+      const needsFloorChange = fromNum !== toNum;
+      const directionVerb = fromNum < toNum ? "բարձրացեք" : "իջեք";
+
       infoBox.style.display = "block";
       infoBox.innerHTML = `
-        <strong>${fromFloorObj.label} → ${toPt.id}</strong><br>
-        Սկզբնակետ՝ <em>${fromFloorObj.label}</em><br>
-        Նպատակակետ՝ <em>${toPt.label}</em>
+        <div><strong>${fromFloorObj.label} → ${toPt.label}</strong></div>
+        ${
+          needsFloorChange
+            ? `<div class="transfer-badge">🛗 / 🪜 Հարկափոխություն՝ ${fromFloorObj.label}-ից ${directionVerb} ${toNum}-րդ հարկ (վերելակով կամ աստիճանավանդակով), ապա հետևեք հատակագծի ուղուն</div>`
+            : `<div style="margin-top:6px;">Նույն հարկում (${toNum}-րդ հարկ)՝ միջանցքով շարժվեք դեպի նպատակակետ։</div>`
+        }
+        <div class="legend-bar">
+          <span class="legend-item"><span class="dot" style="background:#f59e0b;"></span> Վերելակ / աստիճանավանդակ (հարկի մուտք)</span>
+          <span class="legend-item"><span class="dot" style="background:#16a34a;"></span> Նպատակակետ սենյակ</span>
+        </div>
       `;
 
       if (!targetFloor) {
@@ -504,9 +540,9 @@
       }
 
       renderMapCard({
-        caption: `${targetFloor.name} — Միջանցքային ուղին դեպի ${toPt.id} (սկիզբ՝ կապույտ, նպատակ՝ կանաչ)`,
+        caption: `${targetFloor.name} — Ուղին վերելակից/աստիճանավանդակից դեպի ${toPt.id}`,
         src: targetFloor.src,
-        path: buildCorridorRoute(fromFloorId, toPt)
+        path: buildCorridorRoute(toPt)
       });
     }
 
