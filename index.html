@@ -123,13 +123,17 @@
       box-shadow: 0 0 0 1px #adb5bd;
     }
     .map-block {
-      margin-top: 14px;
+      margin-top: 18px;
     }
     .map-caption {
-      font-size: 14px;
-      font-weight: 600;
-      color: #495057;
+      font-size: 15px;
+      font-weight: 700;
+      color: #00875A;
       margin-bottom: 6px;
+      padding: 4px 8px;
+      background: #f0fdf4;
+      border-radius: 4px;
+      display: inline-block;
     }
     .map-stage {
       position: relative;
@@ -215,8 +219,14 @@
   <script>
     let pickerMode = false;
 
-    // Յուրաքանչյուր հարկի վերելակի (elevator) և աստիճանավանդակի (stairs) կոորդինատները քարտեզի վրա
     const FLOORS = {
+      1: {
+        name: "1-ին հարկ",
+        src: "second_floor_clipart_pages-to-jpg-0001.jpg", // 1-ին հարկի նկարը ավելացնելուց հետո կփոխարինես
+        elevator: { x: 56.5, y: 92.5, label: "Վերելակ" },
+        stairs:   { x: 50.8, y: 91.5, label: "Աստիճան" },
+        entry:    { x: 50.8, y: 96.0 }
+      },
       2: {
         name: "2-րդ հարկ",
         src: "second_floor_clipart_pages-to-jpg-0001.jpg",
@@ -249,13 +259,45 @@
       }
     };
 
-    // 2-րդ հարկի միջանցքային հանգույցներ՝ անցումը 201-ի և 238-ի միջանցքային արանքով (x: 50.8)
     const FLOOR2_CORRIDOR = {
       nodes: {
         elevator:    { x: 56.5, y: 92.5 },
         stairs:      { x: 50.8, y: 91.5 },
-        gap_201_238: { x: 50.8, y: 81.0 }, // 201 և 238 սենյակների միջև միջանցքային արանքը
+        gap_201_238: { x: 50.8, y: 81.0 },
         bot_left:    { x: 29.5, y: 87.5 },
         bot_right:   { x: 70.5, y: 87.5 },
         mid_left:    { x: 29.5, y: 74.0 },
-        mid_201_203: { x: 50.8, y:
+        mid_201_203: { x: 50.8, y: 74.0 },
+        mid_right:   { x: 70.5, y: 74.0 },
+        top_left:    { x: 29.5, y: 22.0 },
+        top_mid:     { x: 50.0, y: 22.0 },
+        top_right:   { x: 70.5, y: 22.0 }
+      },
+      edges: {
+        elevator:    ["gap_201_238", "bot_right"],
+        stairs:      ["gap_201_238", "bot_left"],
+        gap_201_238: ["elevator", "stairs", "mid_201_203"],
+        bot_left:    ["stairs", "mid_left"],
+        bot_right:   ["elevator", "mid_right"],
+        mid_left:    ["bot_left", "mid_201_203", "top_left"],
+        mid_201_203: ["gap_201_238", "mid_left", "mid_right"],
+        mid_right:   ["bot_right", "mid_201_203", "top_right"],
+        top_left:    ["mid_left", "top_mid"],
+        top_mid:     ["top_left", "top_right"],
+        top_right:   ["mid_right", "top_mid"]
+      }
+    };
+
+    const mapData = {
+      floorsAsOrigin: [
+        { id: "1", label: "1-ին հարկ", floor: 1 },
+        { id: "2", label: "2-րդ հարկ", floor: 2 },
+        { id: "3", label: "3-րդ հարկ", floor: 3 },
+        { id: "4", label: "4-րդ հարկ", floor: 4 },
+        { id: "5", label: "5-րդ հարկ", floor: 5 },
+        { id: "6", label: "6-րդ հարկ", floor: 6 }
+      ],
+      destinations: [
+        // 2-րդ հարկ
+        { id: "201", label: "2-րդ հարկ — Սենյակ 201", floor: 2, via: "mid_201_203", end: { x: 46.8, y: 74.0 } },
+        { id: "202", label: "2-րդ հարկ — Սենյակ 202", floor: 2, via: "bot_left", end: { x: 41.5,
