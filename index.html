@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Շենգավիթ ԲԿ — Սենյակների Ուղեցույց</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 16px;
+      background: #f4f6f8;
+      color: #212529;
+    }
+    .card {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+    h1 {
+      margin-top: 0;
+      color: #00875A;
+      font-size: 20px;
+      text-align: center;
+    }
+    .form-group {
+      margin-bottom: 12px;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    select, button {
+      width: 100%;
+      padding: 12px;
+      font-size: 15px;
+      border-radius: 8px;
+      border: 1px solid #ced4da;
+      box-sizing: border-box;
+    }
+    button {
+      background: #00875A;
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #006644;
+    }
+    .info-box {
+      background: #e6f4ea;
+      border-left: 5px solid #00875A;
+      padding: 12px;
+      border-radius: 6px;
+      margin: 16px 0;
+      display: none;
+    }
+    .map-block {
+      margin-top: 14px;
+    }
+    .map-caption {
+      font-size: 14px;
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 6px;
+    }
+    .map-img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h1>«Շենգավիթ» ԲԿ — Ներքին Նավիգացիա</h1>
+
+    <div class="form-group">
+      <label for="fromSelect">Որտե՞ղ եք գտնվում (ID)</label>
+      <select id="fromSelect"></select>
+    </div>
+
+    <div class="form-group">
+      <label for="toSelect">Ո՞ւր եք ուզում գնալ (ID)</label>
+      <select id="toSelect"></select>
+    </div>
+
+    <button type="button" id="showBtn">Ցույց տալ ճանապարհը</button>
+
+    <div id="infoBox" class="info-box"></div>
+    <div id="mapResult"></div>
+  </div>
+
+  <script>
+    let mapData = null;
+
+    async function loadNavigation() {
+      const infoBox = document.getElementById("infoBox");
+      try {
+        const res = await fetch("routes.json");
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        mapData = await res.json();
+
+        const fromSel = document.getElementById("fromSelect");
+        const toSel = document.getElementById("toSelect");
+
+        mapData.points.forEach(pt => {
+          fromSel.add(new Option(`${pt.id} — ${pt.label}`, pt.id));
+          toSel.add(new Option(`${pt.id} — ${pt.label}`, pt.id));
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has("from")) fromSel.value = urlParams.get("from");
+        if (urlParams.has("to")) toSel.value = urlParams.get("to");
+
+        document.getElementById("showBtn").onclick = displayRoute;
+
+        if (urlParams.has("from") && urlParams.has("to")) {
+          displayRoute();
+        }
+      } catch (e) {
+        infoBox.style.display = "block";
+        infoBox.innerHTML = "Չհաջողվեց բեռնել <code>routes.json</code> ֆայլը։ Ստուգիր, որ ֆայլը գտնվում է նույն պահոցում (repository) և JSON ձևաչափը ճիշտ է։";
+      }
+    }
+
+    function displayRoute() {
+      const from = document.getElementById("fromSelect").value;
+      const to = document.getElementById("toSelect").value;
+      const key = `${from}_${to}`;
+
+      const infoBox = document.getElementById("infoBox");
+      const mapResult = document.getElementById("mapResult");
+      mapResult.innerHTML = "";
+
+      if (from === to) {
+        infoBox.style.display = "block";
+        infoBox.innerHTML = "Դուք արդեն ընտրել եք նույն կետը։";
+        return;
+      }
+
+      const route = mapData.routes[key];
+      if (!route) {
+        infoBox.style.display = "block";
+        infoBox.innerHTML = `Այս երթուղու համար (<strong>${from} → ${to}</strong>) քարտեզ դեռ ավելացված չէ <code>routes.json</code>-ում։`;
+        return;
+      }
+
+      infoBox.style
