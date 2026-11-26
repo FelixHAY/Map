@@ -165,15 +165,12 @@
       routes: {
         "1_203": {
           title: "Երթուղի՝ Մուտքից դեպի Սենյակ 203",
-          instruction: "1-ին հարկի մուտքից մոտեցեք վերելակին/աստիճանին, բարձրացեք 2-րդ հարկ և միջանցքով շարժվեք դեպի 203 սենյակ։",
+          instruction: "1-ին հարկի մուտքից անցեք միջանցքով, բարձրացեք 2-րդ հարկ և միջանցքով շարժվեք մինչև 203 սենյակի դիմաց։",
           maps: [
             {
               caption: "2-րդ հարկի հատակագիծ — ուղին դեպի 203 սենյակ",
               src: "second_floor_clipart_pages-to-jpg-0001.jpg",
-              startLabel: "Մուտք / 1",
-              endLabel: "203",
-              // Կոորդինատները նկարի չափսի տոկոսներով (x: ձախից աջ 0-100, y: վերևից ներքև 0-100)
-             path: [
+              path: [
                 { x: 57.5, y: 92.5 },
                 { x: 54.0, y: 92.5 },
                 { x: 54.0, y: 74.0 },
@@ -269,7 +266,6 @@
       if (pts.length >= 2) {
         const scaled = pts.map(p => `${p.x * 10},${p.y * 10}`).join(" ");
 
-        // Սպիտակ եզրագիծ՝ գունավոր գծերի/մուգ ֆոնի վրա հստակ երևալու համար
         const halo = document.createElementNS(svgNS, "polyline");
         halo.setAttribute("points", scaled);
         halo.setAttribute("fill", "none");
@@ -279,7 +275,6 @@
         halo.setAttribute("stroke-linejoin", "round");
         svg.appendChild(halo);
 
-        // Հիմնական անիմացված երթուղու գիծը
         const line = document.createElementNS(svgNS, "polyline");
         line.setAttribute("points", scaled);
         line.setAttribute("fill", "none");
@@ -293,22 +288,20 @@
         const startPt = pts[0];
         const endPt = pts[pts.length - 1];
 
-        // Սկզբնակետի շրջան
         const startCircle = document.createElementNS(svgNS, "circle");
         startCircle.setAttribute("cx", startPt.x * 10);
         startCircle.setAttribute("cy", startPt.y * 10);
         startCircle.setAttribute("r", "12");
-        startCircle.setAttribute("fill", "#00875A");
+        startCircle.setAttribute("fill", "#0284c7");
         startCircle.setAttribute("stroke", "#ffffff");
         startCircle.setAttribute("stroke-width", "4");
         svg.appendChild(startCircle);
 
-        // Նպատակակետի շրջան
         const endCircle = document.createElementNS(svgNS, "circle");
         endCircle.setAttribute("cx", endPt.x * 10);
         endCircle.setAttribute("cy", endPt.y * 10);
-        endCircle.setAttribute("r", "12");
-        endCircle.setAttribute("fill", "#d90429");
+        endCircle.setAttribute("r", "14");
+        endCircle.setAttribute("fill", "#16a34a");
         endCircle.setAttribute("stroke", "#ffffff");
         endCircle.setAttribute("stroke-width", "4");
         svg.appendChild(endCircle);
